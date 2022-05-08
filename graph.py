@@ -245,7 +245,7 @@ class Graph:
         return max_count
 
     ##### ex 4 #####
-    def generate_even_graphic_sequence(self, n):
+    def generate_even_sequence(self, n):
         seq = []
         for _ in range(n):
             a = 1
@@ -260,14 +260,14 @@ class Graph:
         return max_count == len(self.nodes)
 
     def fill_random_euler(self, n):
-        seq = self.generate_even_graphic_sequence(n)
+        seq = self.generate_even_sequence(n)
         self.fill_from_graphic_sequence(seq)
         while True:
             is_coherent = self.is_coherent()
             is_graphic = check_graphic_sequence(seq)
             if is_coherent and is_graphic:
                 break
-            seq = self.generate_even_graphic_sequence(n)
+            seq = self.generate_even_sequence(n)
             self.fill_from_graphic_sequence(seq)
 
 
