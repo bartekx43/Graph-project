@@ -273,7 +273,7 @@ class Graph:
 
     def create_copy(self):
         copy = Graph()
-        copy.nodes = [n for n in self.nodes]
+        copy.nodes = [Node.create_copy(n) for n in self.nodes]
         copy.edges = [e for e in self.edges]
         return copy
 
@@ -285,34 +285,20 @@ class Graph:
 
     def find_euler_cycle(self):
         copy = self.create_copy()
-        start_index = random.randint(0, len(copy.nodes)-1)
-        current_node = Node.create_copy(copy.nodes[start_index])
-        # current_node = copy.nodes[start_index].create_copy()
-        euler_cycle = [current_node.number]
-        while True:
-            edges_len = len(current_node.neighbours)
-            end = edges_len == 0
-            if end:
-                break
-            for neighbour_idx in current_node.neighbours:
-                is_bridge = copy.is_bridge(current_node.number, neighbour_idx)
-                edges_left = len(copy.edges)
-
-                if not is_bridge:
-                    copy.delete_edge(current_node.number, neighbour_idx)
-                    copy.nodes[current_node.number].delete_neighbour(neighbour_idx)
-                    copy.nodes[neighbour_idx].delete_neighbour(current_node.number)
-                    current_node = copy.nodes[neighbour_idx]
-                    euler_cycle.append(current_node.number)
-                elif len(current_node.neighbours) == 1:
-                    # copy.delete_node(current_node.num)
-                    copy.delete_edge(current_node.number, neighbour_idx)
-                    copy.nodes[current_node.number].delete_neighbour(neighbour_idx)
-                    copy.nodes[neighbour_idx].delete_neighbour(current_node.number)
-                    current_node = copy.nodes[neighbour_idx]
-                    euler_cycle.append(current_node.number)
-                    
+        euler_cycle = []
+        self.print_adjacency_list()
+        copy.euler_R(copy.nodes[0], euler_cycle)
+        self.print_adjacency_list()
         return euler_cycle
+
+    def euler_R(self, v, s):
+        for u in v.neighbours:
+            self.delete_edge(v.number, u)
+            v.delete_neighbour(u)
+            u_node = self.nodes[u]
+            u_node.delete_neighbour(v.number)
+            self.euler_R(u_node, s)
+        s.append(v.number+1)
 
     ##### ex 5 #####
     def fill_k_regular(self, n, k):
