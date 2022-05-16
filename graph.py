@@ -146,6 +146,7 @@ class Graph:
     ##### ex 3 #####
     def fill_random_NL(self, n, l):
         if l > (n*(n-1))/2:
+            print("Zła ilość krawędzi")
             return False
         self.add_nodes(n)
         while len(self.edges) < l:
@@ -160,7 +161,7 @@ class Graph:
         for i in self.nodes:
             for j in self.nodes:
                 probability = random.random()
-                if probability >= p:
+                if probability <= p:
                     self.add_edge(i.number, j.number)
                     self.add_neighbours(i.number, j.number)
 
@@ -169,6 +170,7 @@ class Graph:
     ##### ex 1 #####
     def fill_from_graphic_sequence(self, sequence):
         if not check_graphic_sequence(sequence):
+            print("Ciąg nie jest graficzny")
             return False
         seq = [[idx, deg] for idx, deg in enumerate(sequence)]
         self.add_nodes(len(sequence))
@@ -190,6 +192,12 @@ class Graph:
         c = edge2.start
         d = edge2.end
 
+        if a == d or b == c:
+            return False
+
+        if self.edge_exists(a,d) or self.edge_exists(b,c):
+            return False
+
         edge1.end = d
         edge2.end = b
         self.nodes[a].delete_neighbour(b)
@@ -199,6 +207,7 @@ class Graph:
 
         self.add_neighbours(a,d)
         self.add_neighbours(c,b)
+        return True
 
 
     def randomize_edges(self, n, seq):
@@ -208,8 +217,9 @@ class Graph:
                 idx1 = random.randint(0, len(self.edges)-1)
                 idx2 = random.randint(0, len(self.edges)-1)
                 if idx1 != idx2:
-                    break
-            self.swap_edges(self.edges[idx1], self.edges[idx2])
+                    res = self.swap_edges(self.edges[idx1], self.edges[idx2])
+                    if res:
+                        break
 
     ##### ex 3 #####
     def components_R(self, nr, v, comp):
