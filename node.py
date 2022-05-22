@@ -1,3 +1,4 @@
+from functools import reduce
 
 class Node:
     def __init__(self, number):
