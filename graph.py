@@ -3,9 +3,11 @@ from edge import *
 from functions import *
 from node import *
 from operator import itemgetter
+from graphviz import Source
+from networkx.drawing import nx_pydot
 import networkx as nx
 import matplotlib.pyplot as plt
-
+from IPython.display import display
 
 class Graph:
     def __init__(self, nodes=[], edges=[]):
@@ -21,6 +23,12 @@ class Graph:
 
     def add_edge(self, start, end):
         if start == end or self.edge_exists(start, end):
+            return False
+        self.edges.append(Edge(start, end))
+        return True
+
+    def add_edge_to_digraph(self, start, end):
+        if start == end or self.edge_exists_in_digraph(start, end):
             return False
         self.edges.append(Edge(start, end))
         return True
@@ -48,8 +56,18 @@ class Graph:
                 return edge, i
         return None, -1
 
+    def find_edge_in_digraph(self, idx1, idx2):
+        for i, edge in enumerate(self.edges):
+            if (edge.start == idx1 and edge.end == idx2):
+                return edge, i
+        return None, -1
+
     def edge_exists(self, index1, index2):
         _, index = self.find_edge(index1, index2)
+        return index >= 0
+
+    def edge_exists_in_digraph(self, index1, index2):
+        _, index = self.find_edge_in_digraph(index1, index2)
         return index >= 0
 
     def delete_edge(self, idx1, idx2):
@@ -132,7 +150,7 @@ class Graph:
 
     ##### ex 2 #####
     def create_nx_graph(self):
-        G = nx.MultiDiGraph()
+        G = nx.DiGraph()
         for node in self.nodes:
             G.add_node(node.number + 1)
         for edge in self.edges:
@@ -141,7 +159,7 @@ class Graph:
 
     def draw_nx_graph(self):
         G = self.create_nx_graph()
-        nx.draw_circular(G, with_labels=True, font_weight='bold')
+        nx.draw_circular(G , with_labels=True, font_weight='bold')
         plt.show()
 
     ##### ex 3 #####
@@ -447,9 +465,10 @@ class Graph:
         self.add_nodes(n)
         for i in self.nodes:
             for j in self.nodes:
+                print(str(i.number) + " " + str(j.number))
                 probability = random.random()
                 if probability <= p and i != j:
-                    self.add_edge(i.number, j.number)
+                    self.add_edge_to_digraph(i.number, j.number)
                     self.add_neighbour(i.number, j.number)
 
     def to_adjacency_matrix(self):

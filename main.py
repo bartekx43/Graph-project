@@ -104,7 +104,10 @@ if __name__=="__main__":
             print('--- Johnson ---')
             generate_and_draw_digraph_with_weight(graph, 4, 5, 0.5)
             print(graph.johnson())
-
+    if args.project == 5:
+        graph.generate_random_digraph(6,6, 1)
+        graph.print_all_representations()
+        graph.draw_nx_graph()
 
 
     if args.project == 1 or args.project == 2:
