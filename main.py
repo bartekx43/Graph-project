@@ -104,7 +104,7 @@ if __name__=="__main__":
             print('--- Johnson ---')
             generate_and_draw_digraph_with_weight(graph, 4, 5, 0.5)
             print(graph.johnson())
-    if args.project == 5:
+    if args.project == 6:
         # graph.generate_random_connected_digraph(6,6, 0.5)
         graph.fill_from_adjacency_list("files/AL.txt", digraph=True)
         
