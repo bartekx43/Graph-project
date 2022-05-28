@@ -1,13 +1,12 @@
 import random
+import numpy as np
+from pkg_resources import resource_exists
 from edge import *
 from functions import *
 from node import *
 from operator import itemgetter
-from graphviz import Source
-from networkx.drawing import nx_pydot
 import networkx as nx
 import matplotlib.pyplot as plt
-from IPython.display import display
 
 class Graph:
     def __init__(self, nodes=[], edges=[]):
@@ -85,7 +84,7 @@ class Graph:
     ############################# PROJECT1 ################################
 
     ##### ex 1 #####
-    def fill_from_adjacency_list(self, filename):
+    def fill_from_adjacency_list(self, filename, digraph=False):
         with open(filename, 'r') as f:
             lines = f.readlines()
         rows = len(lines)
@@ -94,9 +93,12 @@ class Graph:
             line = lines[i].split(' ')
             for j in range(len(line)):
                 self.add_neighbour(i, int(line[j]) - 1)
-                self.add_edge(i, int(line[j]) - 1)
+                if(digraph):
+                    self.add_edge_to_digraph(i, int(line[j]) - 1)    
+                else:
+                    self.add_edge(i, int(line[j]) - 1)
 
-    def fill_from_adjacency_matrix(self, filename):
+    def fill_from_adjacency_matrix(self, filename, digraph=False):
         with open(filename, 'r') as f:
             lines = f.readlines()
         rows = len(lines)
@@ -106,10 +108,13 @@ class Graph:
             for j in range(len(line)):
                 if int(line[j]) == 1:
                     self.add_neighbour(i, j)
-                    if j < i:
-                        self.add_edge(i, j)
+                    if(digraph):
+                        self.add_edge_to_digraph(i, j)
+                    else:
+                        if j < i:
+                            self.add_edge(i, j)
 
-    def fill_from_incidence_matrix(self, filename):
+    def fill_from_incidence_matrix(self, filename, digraph=False):
         with open(filename, 'r') as f:
             lines = f.readlines()
         line = lines[0].split(' ')
@@ -125,8 +130,11 @@ class Graph:
                 elif int(line[j]) == 1 and ones == 1:
                     end = j
                     ones += 1
-            self.add_edge(start, end)
             self.add_neighbours(start, end)
+            if(digraph):
+                self.add_edge_to_digraph(start, end)
+            else:
+                self.add_edge(start, end)
 
     def print_adjacency_list(self):
         print('Lista sąsiedztwa:')
@@ -602,6 +610,47 @@ class Graph:
                 result[u.number][v.number] = dij_distance[u.number][v.number] - bell_dist[u.number] + bell_dist[v.number]
 
         return result
+
+    ###################### PROJECT 6 ###########################
+
+    def generate_random_connected_digraph(self, min_nodes, max_nodes, p):
+        n = random.randint(min_nodes, max_nodes)
+        self.add_nodes(n)
+        for i in range(len(self.nodes)):
+            self.add_edge_to_digraph(i, (i+1)%n)
+        for i in self.nodes:
+            for j in self.nodes:
+                print(str(i.number) + " " + str(j.number))
+                probability = random.random()
+                if probability <= p and i != j and not self.edge_exists_in_digraph(i, j):
+                    self.add_edge_to_digraph(i.number, j.number)
+                    self.add_neighbour(i.number, j.number)
+
+    def probability_page_rank(self, d=0.15, N=100_000):
+        result = [0 for _ in range(len(self.nodes))]
+        current = random.randint(0, len(self.nodes)-1)
+        for _ in range(N):
+            p = random.random()
+            if p < d:
+                current = random.randint(0, len(self.nodes)-1)
+            else:
+                neighbours = self.nodes[current].neighbours
+                current = neighbours[random.randint(0, len(neighbours)-1)]
+            result[current] += 1
+        result = list(map(lambda x: x/N, result))
+        print(result)
+        
+    def iterative_page_rank(self, d=0.15, N=100_000):
+        pt = np.array([1/len(self.nodes) for _ in range(len(self.nodes))])
+        A = np.zeros((len(self.nodes), len(self.nodes)))
+        for i in self.nodes:
+            for j in i.neighbours:
+                A[i.number][j] = 1/len(i.neighbours)
+        from_adjacency_matrix = lambda x: (1-d)*x + d/(len(self.nodes))
+        P = np.transpose(from_adjacency_matrix(A))
+        for _ in range(N):
+           pt = P.dot(pt)
+        print(list(map(lambda x: round(x,5), pt.tolist())))
 
 
         

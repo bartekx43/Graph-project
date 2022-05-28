@@ -105,9 +105,14 @@ if __name__=="__main__":
             generate_and_draw_digraph_with_weight(graph, 4, 5, 0.5)
             print(graph.johnson())
     if args.project == 5:
-        graph.generate_random_digraph(6,6, 1)
-        graph.print_all_representations()
-        graph.draw_nx_graph()
+        # graph.generate_random_connected_digraph(6,6, 0.5)
+        graph.fill_from_adjacency_list("files/AL.txt", digraph=True)
+        
+        graph.probability_page_rank() 
+        graph.iterative_page_rank() 
+
+
+
 
 
     if args.project == 1 or args.project == 2:
