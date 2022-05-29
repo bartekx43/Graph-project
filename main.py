@@ -105,14 +105,12 @@ if __name__=="__main__":
             generate_and_draw_digraph_with_weight(graph, 4, 5, 0.5)
             print(graph.johnson())
     if args.project == 6:
-        # graph.generate_random_connected_digraph(6,6, 0.5)
-        graph.fill_from_adjacency_list("files/AL.txt", digraph=True)
-        
-        graph.probability_page_rank() 
-        graph.iterative_page_rank() 
-
-
-
+        if args.ex == 1:
+            graph.generate_random_connected_digraph(6,6, 0.2)
+            # graph.fill_from_adjacency_list("files/AL.txt", digraph=True)
+            
+            graph.probability_page_rank() 
+            graph.iterative_page_rank() 
 
 
     if args.project == 1 or args.project == 2:

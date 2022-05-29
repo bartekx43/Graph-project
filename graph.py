@@ -618,9 +618,9 @@ class Graph:
         self.add_nodes(n)
         for i in range(len(self.nodes)):
             self.add_edge_to_digraph(i, (i+1)%n)
+            self.add_neighbour(i, (i+1)%n)
         for i in self.nodes:
             for j in self.nodes:
-                print(str(i.number) + " " + str(j.number))
                 probability = random.random()
                 if probability <= p and i != j and not self.edge_exists_in_digraph(i, j):
                     self.add_edge_to_digraph(i.number, j.number)
@@ -635,10 +635,10 @@ class Graph:
                 current = random.randint(0, len(self.nodes)-1)
             else:
                 neighbours = self.nodes[current].neighbours
-                current = neighbours[random.randint(0, len(neighbours)-1)]
+                current = neighbours[random.randint(0, len(neighbours)-1) if len(neighbours)>1 else 0]
             result[current] += 1
         result = list(map(lambda x: x/N, result))
-        print(result)
+        print(f"Prob: {result}")
         
     def iterative_page_rank(self, d=0.15, N=100_000):
         pt = np.array([1/len(self.nodes) for _ in range(len(self.nodes))])
@@ -650,7 +650,7 @@ class Graph:
         P = np.transpose(from_adjacency_matrix(A))
         for _ in range(N):
            pt = P.dot(pt)
-        print(list(map(lambda x: round(x,5), pt.tolist())))
+        print(f"Iter: {list(map(lambda x: round(x,5), pt.tolist()))}")
 
 
         
